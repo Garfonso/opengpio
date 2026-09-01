@@ -5,7 +5,17 @@
 #include <uv.h>
 #include <thread>
 #include <atomic>
+#include <memory>
 using namespace std;
+
+// wait_edge_events() returns as soon as an event arrives; its timeout only decides
+// how quickly a stopped loop notices that it should end. Waking up every
+// millisecond meant 1000 wakeups per second and per watched line - which was
+// bounded to four lines only because the loops used to occupy the (bounded) libuv
+// thread pool. Now that every line gets its own thread, that cost would scale with
+// the number of watched lines, so check for the stop request far less often. This
+// is also the worst case delay between stopping a watch and its thread ending.
+static const chrono::milliseconds LOOP_STOP_CHECK_INTERVAL(100);
 
 Napi::Array GpioInput(Napi::CallbackInfo const &info)
 {
@@ -119,11 +129,39 @@ Napi::String Info(const Napi::CallbackInfo &info)
     return Napi::String::New(info.Env(), "Built for the wanderers, the explorers, the adventurers of the world. For those who want to see the world, not read about it. For those who want to get out there and experience it all. For those who want to live their dreams, not sleep through them. For those who want to see the world their way. Adventure belongs to the couragous.");
 }
 
+/**
+ * Owns the line request of a watch.
+ *
+ * It is held by a shared_ptr, shared between the worker thread and the JavaScript
+ * callbacks handed out below. Whoever goes away last destroys it, so neither side
+ * can be left with a dangling pointer.
+ */
 struct WatchContext
 {
-    std::atomic<bool> active;
-    ::gpiod::line_request *request;
+    std::atomic<bool> active{true};
+    std::atomic<bool> released{false};
+    ::gpiod::line_request *request = nullptr;
     Napi::ThreadSafeFunction thread_safe_watch_callback;
+
+    /**
+     * Give the line back to the kernel. Called by the worker thread as soon as the
+     * loop ended, so the line does not stay claimed until the JavaScript side is
+     * garbage collected. Releasing twice would throw, hence the flag.
+     */
+    void releaseRequest()
+    {
+        bool expected = false;
+        if (request != nullptr && released.compare_exchange_strong(expected, true))
+        {
+            request->release();
+        }
+    }
+
+    ~WatchContext()
+    {
+        releaseRequest();
+        delete request;
+    }
 };
 
 Napi::Array GpioWatch(Napi::CallbackInfo const &info)
@@ -180,14 +218,21 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
         return Napi::Array::New(info.Env());
     }
 
-    WatchContext *data = new WatchContext();
+    auto data = std::make_shared<WatchContext>();
     data->request = request;
-    data->active = true;
     data->thread_safe_watch_callback = thread_safe_watch_callback;
 
-    Napi::Function getter = Napi::Function::New(info.Env(), [request, line_offset](const Napi::CallbackInfo &info)
+    Napi::Function getter = Napi::Function::New(info.Env(), [data, line_offset](const Napi::CallbackInfo &info) -> Napi::Value
                                                 {
-    bool value = request->get_value(line_offset) == ::gpiod::line::value::ACTIVE ? true : false;
+    if (!data->active)
+    {
+        // The line may already be released - reading it would throw out of a
+        // context that cannot handle C++ exceptions.
+        Napi::Error::New(info.Env(), "watch has been stopped").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+
+    bool value = data->request->get_value(line_offset) == ::gpiod::line::value::ACTIVE ? true : false;
     return Napi::Boolean::New(info.Env(), value); });
 
     Napi::Function cleanup = Napi::Function::New(info.Env(), [data](const Napi::CallbackInfo &info)
@@ -206,7 +251,7 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
 
         while (data->active)
         {
-            bool has_event = request->wait_edge_events(chrono::milliseconds(1));
+            bool has_event = request->wait_edge_events(LOOP_STOP_CHECK_INTERVAL);
             if (has_event)
             {
                 request->read_edge_events(buffer);
@@ -223,10 +268,10 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
         }
 
         // The loop has been stopped via cleanup(); release resources here (the
-        // equivalent of the old uv_queue_work completion callback).
+        // equivalent of the old uv_queue_work completion callback). The context
+        // itself is destroyed once the JavaScript callbacks are gone as well.
         data->thread_safe_watch_callback.Release();
-        data->request->release();
-        delete data; });
+        data->releaseRequest(); });
     watch_thread.detach();
 
     // Outputs
@@ -237,13 +282,37 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
     return arr;
 }
 
+/**
+ * Owns the line request of a PWM output - see WatchContext for the ownership
+ * rules. frequency and duty_cycle are written by the JavaScript thread through
+ * the setters below and read by the worker thread, so they have to be atomic.
+ */
 struct PwmContext
 {
-    int frequency;
-    double duty_cycle;
-    int line_offset;
-    std::atomic<bool> active;
-    ::gpiod::line_request *request;
+    std::atomic<int> frequency{50};
+    std::atomic<double> duty_cycle{0};
+    int line_offset = 0;
+    std::atomic<bool> active{true};
+    std::atomic<bool> released{false};
+    ::gpiod::line_request *request = nullptr;
+
+    /**
+     * Give the line back to the kernel; releasing twice would throw.
+     */
+    void releaseRequest()
+    {
+        bool expected = false;
+        if (request != nullptr && released.compare_exchange_strong(expected, true))
+        {
+            request->release();
+        }
+    }
+
+    ~PwmContext()
+    {
+        releaseRequest();
+        delete request;
+    }
 };
 
 void WaitBlocking(long nanoseconds)
@@ -297,11 +366,10 @@ Napi::Array GpioPwm(Napi::CallbackInfo const &info)
         return Napi::Array::New(info.Env());
     }
 
-    PwmContext *data = new PwmContext();
+    auto data = std::make_shared<PwmContext>();
     data->frequency = frequency;
     data->duty_cycle = duty_cycle;
     data->request = request;
-    data->active = true;
     data->line_offset = line_offset;
 
     // Run the PWM loop on a dedicated std::thread instead of the libuv thread
@@ -330,9 +398,9 @@ Napi::Array GpioPwm(Napi::CallbackInfo const &info)
             WaitBlocking(off_time_ns);
         }
 
-        // Stopped via cleanup(); release resources here.
-        data->request->release();
-        delete data; });
+        // Stopped via cleanup(); hand the line back right away. The context itself
+        // is destroyed once the JavaScript callbacks are gone as well.
+        data->releaseRequest(); });
     pwm_thread.detach();
 
     Napi::Function duty_cycle_setter = Napi::Function::New(info.Env(), [data](const Napi::CallbackInfo &info)
