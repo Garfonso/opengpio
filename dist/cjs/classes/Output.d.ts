@@ -28,7 +28,8 @@ export declare class Output extends GpioDriver {
     set value(value: boolean);
     /**
      * Gets the last value set on the output GPIO pin.
-     * @returns {boolean | null} The last value set on the GPIO pin, or `null` if no value has been set.
+     * @returns {boolean | null} The last value set on the GPIO pin, or the initial value the
+     * line was claimed with if nothing has been set since.
      * @throws {DriverStoppedError} If the output has been stopped.
      */
     get value(): boolean | null;

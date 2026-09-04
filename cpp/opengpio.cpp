@@ -81,6 +81,11 @@ Napi::Array GpioOutput(Napi::CallbackInfo const &info)
     int chip_number = info[0].As<Napi::Number>().Int32Value();
     std::string chip_path = "/dev/gpiochip" + to_string(chip_number);
     ::gpiod::line::offset line_offset = info[1].As<Napi::Number>().Int32Value(); // TODO can this use get_line_offset_from_name? Should try send from JS. See libgpiod examples for reference.
+    bool initial_value = false;
+    if (info.Length() > 2 && !info[2].IsUndefined() && !info[2].IsNull())
+    {
+        initial_value = info[2].ToBoolean().Value();
+    }
 
     // Resources
     ::gpiod::line_request *request = nullptr;
@@ -92,6 +97,12 @@ Napi::Array GpioOutput(Napi::CallbackInfo const &info)
         ::gpiod::line_settings line_settings = ::gpiod::line_settings();
         line_settings.set_direction(
             ::gpiod::line::direction::OUTPUT);
+
+        // Drive the wanted level from the moment the line is claimed. libgpiod defaults
+        // the output value to INACTIVE, so without this every output glitches low
+        // between do_request() and the first explicit set_value() call.
+        line_settings.set_output_value(
+            initial_value ? ::gpiod::line::value::ACTIVE : ::gpiod::line::value::INACTIVE);
 
         request = new ::gpiod::line_request(::gpiod::chip(chip_path)
                                                 .prepare_request()

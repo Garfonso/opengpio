@@ -29,7 +29,7 @@ describe('Output', () => {
     it('should initialize with bindings.output and set setter and cleanup', () => {
         const output = new Output(gpio);
 
-        expect(bindings.output).toHaveBeenCalledWith(gpio.chip, gpio.line);
+        expect(bindings.output).toHaveBeenCalledWith(gpio.chip, gpio.line, false);
         expect((output as any).setter).toBe(mockSetter);
     });
 
@@ -73,10 +73,19 @@ describe('Output', () => {
         expect(output.value).toBe(false);
     });
 
-    it('should return null when no value has been set', () => {
+    it('should return the initial value when no value has been set', () => {
         const output = new Output(gpio);
 
-        expect(output.value).toBe(null);
+        expect(output.value).toBe(false);
+    });
+
+    it('should claim the line with the configured initial value', () => {
+        const output = new Output(gpio, { value: true });
+
+        expect(bindings.output).toHaveBeenCalledWith(gpio.chip, gpio.line, true);
+        expect(output.value).toBe(true);
+        // The line is driven by the request itself, no extra set_value() is needed.
+        expect(mockSetter).not.toHaveBeenCalled();
     });
 
     it('should throw DriverStoppedError when getting value after stop is invoked', () => {

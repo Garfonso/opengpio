@@ -16,7 +16,8 @@ class Output extends GpioDriver_1.GpioDriver {
      * @param options - Configuration options for the output pin.
      */
     constructor(gpio, options = {}) {
-        const [setter, cleanup] = bindings_1.bindings.output(gpio.chip, gpio.line);
+        const initialValue = !!options.value;
+        const [setter, cleanup] = bindings_1.bindings.output(gpio.chip, gpio.line, initialValue);
         super(cleanup);
         /**
          * A function to set the value of the GPIO pin.
@@ -27,6 +28,8 @@ class Output extends GpioDriver_1.GpioDriver {
         this.lastValue = null;
         this.debug('constructing output with', gpio, options);
         this.setter = setter;
+        // The line is already driven with this level, so the cache must reflect it.
+        this.lastValue = initialValue;
     }
     /**
      * Sets the value of the output GPIO pin.
@@ -46,7 +49,8 @@ class Output extends GpioDriver_1.GpioDriver {
     }
     /**
      * Gets the last value set on the output GPIO pin.
-     * @returns {boolean | null} The last value set on the GPIO pin, or `null` if no value has been set.
+     * @returns {boolean | null} The last value set on the GPIO pin, or the initial value the
+     * line was claimed with if nothing has been set since.
      * @throws {DriverStoppedError} If the output has been stopped.
      */
     get value() {

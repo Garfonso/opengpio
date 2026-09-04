@@ -79,9 +79,10 @@ export type OpenGpioBindings = {
      * Configures a GPIO pin as an output.
      * @param chip - The GPIO chip number.
      * @param line - The GPIO line number.
+     * @param initialValue - The value the line is driven with while it is claimed.
      * @returns A tuple containing a `PinSetter` and a `CleanupCallback`.
      */
-    output: (chip: number, line: number) => [PinSetter, CleanupCallback];
+    output: (chip: number, line: number, initialValue: boolean) => [PinSetter, CleanupCallback];
     /**
      * Configures a GPIO pin to watch for edge changes.
      * @param chip - The GPIO chip number.
@@ -114,5 +115,11 @@ export type GpioInputOptions = {
 /**
  * Configuration options for a GPIO output pin.
  */
-export type GpioOutputOptions = {};
+export type GpioOutputOptions = {
+    /**
+     * The value the pin is driven with from the moment the line is claimed.
+     * Defaults to `false`, which is also libgpiod's own default.
+     */
+    value?: boolean;
+};
 //# sourceMappingURL=types.d.ts.map
