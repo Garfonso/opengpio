@@ -14,7 +14,11 @@
         "start": "ts-node src/index.ts",
         "lint": "eslint . --ext .ts",
         "format": "prettier --config .prettierrc 'src/**/*.ts' --write",
-        "bcmToChip": "node utils/bcmToChip.js"
+        "bcmToChip": "node utils/bcmToChip.js",
+        "release": "release-script",
+        "release-patch": "release-script patch --yes",
+        "release-minor": "release-script minor --yes",
+        "release-major": "release-script major --yes"
     },
     "repository": {
         "type": "git",
@@ -77,6 +81,9 @@
     "license": "MIT",
     "description": "Fork of opengpio: a performant C++ based general purpose GPIO controller for linux devices, using libgpiod 2.x.",
     "devDependencies": {
+        "@alcalzone/release-script": "^5.2.1",
+        "@alcalzone/release-script-plugin-license": "^5.2.0",
+        "@alcalzone/release-script-plugin-manual-review": "^5.2.0",
         "@swc-node/register": "^1.8.0",
         "@swc/core": "^1.4.2",
         "@swc/helpers": "^0.5.6",
