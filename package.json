@@ -1,6 +1,6 @@
 {
-    "name": "opengpio",
-    "version": "2.0.2",
+    "name": "@garfonso/opengpio",
+    "version": "2.1.0",
     "main": "./dist/cjs/index.js",
     "module": "./dist/esm/index.js",
     "scripts": {
@@ -18,8 +18,25 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/ExpeditionExploration/opengpio.git"
+        "url": "git+https://github.com/Garfonso/opengpio.git"
     },
+    "homepage": "https://github.com/Garfonso/opengpio#readme",
+    "bugs": {
+        "url": "https://github.com/Garfonso/opengpio/issues"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "files": [
+        "binding.gyp",
+        "cpp",
+        "dist",
+        "src",
+        "!src/**/*.spec.ts",
+        "!dist/**/*.tsbuildinfo",
+        "README.md",
+        "LICENSE"
+    ],
     "keywords": [
         "gpio",
         "neo3",
@@ -53,9 +70,12 @@
         "gpiod",
         "2.1"
     ],
-    "author": "",
+    "author": "Expedition Exploration (https://github.com/ExpeditionExploration)",
+    "contributors": [
+        "Garfonso <garfonso@mobo.info>"
+    ],
     "license": "MIT",
-    "description": "",
+    "description": "Fork of opengpio: a performant C++ based general purpose GPIO controller for linux devices, using libgpiod 2.x.",
     "devDependencies": {
         "@swc-node/register": "^1.8.0",
         "@swc/core": "^1.4.2",

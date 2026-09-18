@@ -1,5 +1,24 @@
 # OpenGPIO
 
+> **Fork notice**
+>
+> This is a maintained fork of [ExpeditionExploration/opengpio](https://github.com/ExpeditionExploration/opengpio),
+> published on npm as [`@garfonso/opengpio`](https://www.npmjs.com/package/@garfonso/opengpio).
+> It exists because [ioBroker.rpi2](https://github.com/iobroker-community-adapters/ioBroker.rpi2)
+> needs fixes that are not (yet) released upstream:
+>
+> - **Watched lines get their own thread.** Upstream ran every `watch()` and `pwm()` loop as an
+>   endless task on the libuv thread pool, so only as many lines as the pool has workers (4 by
+>   default) ever received edge events - the rest silently never updated
+>   ([rpi2#378](https://github.com/iobroker-community-adapters/ioBroker.rpi2/issues/378)).
+> - **Outputs are claimed with their target level.** `Device.output()` accepts `{ value }` and
+>   passes it to `gpiod::line_settings::set_output_value()`, so a line is no longer driven low
+>   between `do_request()` and the first `set_value()` call - which made outputs visibly glitch
+>   on startup ([rpi2#431](https://github.com/iobroker-community-adapters/ioBroker.rpi2/issues/431)).
+>   The `Output.value` getter reports that initial level instead of `null`.
+>
+> Everything else is upstream's work, under the same MIT license.
+
 A performant c++ based general purpose GPIO controller for linux devices.
 OpenGPIO is written using libgpiod, line & chip based abstractions.
 
@@ -72,12 +91,17 @@ Using an official device driver is simple, just import the device by its name.
 Pins can be referenced directly by bcm identifier, board pin number, or via static named mappings on the device class as seen in the examples below.
 
 ```ts
-import { RaspberryPi_5B, Edge } from 'opengpio';
+import { RaspberryPi_5B, Edge } from '@garfonso/opengpio';
 
 // GPIO Output
 const output = RaspberryPi_5B.output('GPIO14');
 output.value = true; // Set the RaspberryPi 5B's GPIO14 pin high
 output.value = false; // Set the RaspberryPi 5B's GPIO14 pin low
+
+// GPIO Output with an initial value
+// The line is driven high from the moment it is claimed, so it never glitches low first.
+const relay = RaspberryPi_5B.output('GPIO15', { value: true });
+console.log(relay.value); // true - the level the line is actually driven with
 
 // GPIO Input
 const input = RaspberryPi_5B.input(8);
@@ -106,7 +130,7 @@ pwm.setFrequency(100); // Updates the frequency to 100HZ
 If no official driver exists, you can use the Default device and provide the chip and line numbers directly. Otherwise, usage is identical.
 
 ```ts
-import { Default, Edge } from 'opengpio';
+import { Default, Edge } from '@garfonso/opengpio';
 
 // GPIO Output
 const output = Default.output({ chip: 0, line: 27 });
@@ -115,12 +139,12 @@ output.value = true; // Set the pin high at chip 0 line 27
 
 ## Local Development
 
-There's a good chance you are developing your software on a separate operating system from where it will finally run. In this case opengpio may not be compatible with your system. For example, developing on Windows or Mac for later deployment to Raspberry Pi running Raspbian. In these cases, you can install the library locally using `npm i --save opengpio --ignore-scripts` to prevent npm from running build when it installs. Since bindings will not exist, you will need to tell opengpio not to load the bindings when it imports the library. You can do this by setting the environment variable `OPENGPIO_MOCKED=true`. This will prevent opengpio from loading the native bindings and instead all functions will be replaced with mock functions that don't call the native bindings.
+There's a good chance you are developing your software on a separate operating system from where it will finally run. In this case opengpio may not be compatible with your system. For example, developing on Windows or Mac for later deployment to Raspberry Pi running Raspbian. In these cases, you can install the library locally using `npm i --save @garfonso/opengpio --ignore-scripts` to prevent npm from running build when it installs. Since bindings will not exist, you will need to tell opengpio not to load the bindings when it imports the library. You can do this by setting the environment variable `OPENGPIO_MOCKED=true`. This will prevent opengpio from loading the native bindings and instead all functions will be replaced with mock functions that don't call the native bindings.
 
 If you have a case where you need to detect if the library is running with mocked bindings you can check a parameter called "mocked", exported from the library.
 
 ```ts
-import opengpio from 'opengpio';
+import opengpio from '@garfonso/opengpio';
 if (opengpio.mocked) {
     console.log('opengpio is running with mocked bindings');
 }
