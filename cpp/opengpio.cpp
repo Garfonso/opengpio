@@ -224,6 +224,9 @@ Napi::Array GpioWatch(Napi::CallbackInfo const &info)
     }
     catch (const std::exception &e)
     {
+        // No watch thread will ever release the callback - an unreleased
+        // ThreadSafeFunction would keep the Node.js event loop alive.
+        thread_safe_watch_callback.Release();
         Napi::Error error = Napi::Error::New(info.Env(), e.what());
         error.ThrowAsJavaScriptException();
         return Napi::Array::New(info.Env());

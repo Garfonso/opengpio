@@ -6,6 +6,9 @@
 -->
 ## **WORK IN PROGRESS**
 
+* (Garfonso) A watch whose line request fails (line busy, bias or debounce not supported, ...)
+  no longer leaves its callback registered, which kept the Node.js process from exiting
+
 ## 2.1.0 (2026-09-18)
 
 First release of this fork, published as `@garfonso/opengpio`.
