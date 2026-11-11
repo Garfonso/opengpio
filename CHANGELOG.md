@@ -4,7 +4,7 @@
 	Placeholder for the next version (at the beginning of the line):
 	## **WORK IN PROGRESS**
 -->
-## **WORK IN PROGRESS**
+## 2.1.2 (2026-11-11)
 
 * (Garfonso) Fix the lint errors that made the release workflow fail, so 2.1.1 was never published.
   This release contains the 2.1.1 changes.
