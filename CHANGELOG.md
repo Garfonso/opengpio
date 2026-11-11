@@ -6,6 +6,9 @@
 -->
 ## **WORK IN PROGRESS**
 
+* (Garfonso) The installation checks for the libgpiod 2.2 development files before building
+  and explains how to install them, instead of failing with a compiler error. Packages that
+  depend on opengpio no longer need their own preinstall check.
 * (Garfonso) A watch whose line request fails (line busy, bias or debounce not supported, ...)
   no longer leaves its callback registered, which kept the Node.js process from exiting
 
