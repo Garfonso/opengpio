@@ -4,7 +4,7 @@
 	Placeholder for the next version (at the beginning of the line):
 	## **WORK IN PROGRESS**
 -->
-## **WORK IN PROGRESS**
+## 2.1.1 (2026-11-11)
 
 * (Garfonso) The installation checks for the libgpiod 2.2 development files before building
   and explains how to install them, instead of failing with a compiler error. Packages that
