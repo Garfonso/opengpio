@@ -4,6 +4,12 @@
 	Placeholder for the next version (at the beginning of the line):
 	## **WORK IN PROGRESS**
 -->
+## **WORK IN PROGRESS**
+
+* (Garfonso) The release workflow failed on a cached build file, so 2.1.1 and 2.1.2 were never
+  published. This release contains their changes.
+* (Garfonso) Tested on Node.js 22, 24 and 26 (Node.js 20 is end of life).
+
 ## 2.1.2 (2026-11-11)
 
 * (Garfonso) Fix the lint errors that made the release workflow fail, so 2.1.1 was never published.
