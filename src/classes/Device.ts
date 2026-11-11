@@ -105,7 +105,11 @@ export class Device {
         options: GpioOutputOptions = {}
     ): Pwm {
         const resolvedGpio = this.getGpioFromIdentifier(gpio);
-        this.debug(`starting PWM with duty cycle ${dutyCycle} and frequency ${frequency}Hz with`, resolvedGpio, options);
+        this.debug(
+            `starting PWM with duty cycle ${dutyCycle} and frequency ${frequency}Hz with`,
+            resolvedGpio,
+            options
+        );
         return new Pwm(resolvedGpio, dutyCycle, frequency, options);
     }
 

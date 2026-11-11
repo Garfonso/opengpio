@@ -30,7 +30,7 @@ describe('Pwm', () => {
     });
 
     it('should initialize with the correct parameters', () => {
-        const pwm = new Pwm(gpio, 50, 100);
+        new Pwm(gpio, 50, 100);
 
         expect(bindings.pwm).toHaveBeenCalledWith(0, 1, 50, 100);
     });

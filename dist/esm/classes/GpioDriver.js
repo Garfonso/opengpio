@@ -1,5 +1,5 @@
-import EventEmitter from "events";
-import { debug } from "../debug";
+import EventEmitter from 'events';
+import { debug } from '../debug';
 const drivers = new Set();
 process.on('beforeExit', () => {
     debug('Cleaning up all drivers');

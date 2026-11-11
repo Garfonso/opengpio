@@ -1,6 +1,6 @@
 import { bindings } from '../bindings';
-import { GpioDriver } from "./GpioDriver";
-import { DriverStoppedError } from "../errors/DriverStoppedError";
+import { GpioDriver } from './GpioDriver';
+import { DriverStoppedError } from '../errors/DriverStoppedError';
 /**
  * Represents a PWM (Pulse Width Modulation) GPIO pin.
  * Extends the `GpioDriver` class to provide PWM-specific functionality.

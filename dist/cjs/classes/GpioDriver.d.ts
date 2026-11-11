@@ -1,5 +1,5 @@
-import EventEmitter from "events";
-import { CleanupCallback } from "../types";
+import EventEmitter from 'events';
+import { CleanupCallback } from '../types';
 /**
  * Represents a base class for managing GPIO drivers.
  * Extends `EventEmitter` to provide event-driven functionality.

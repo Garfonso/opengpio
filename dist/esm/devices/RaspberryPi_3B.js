@@ -3,7 +3,7 @@ import { Device } from '../classes/Device';
 export class RaspberryPi_3B extends Device {
 }
 _a = RaspberryPi_3B;
-//as of 
+//as of
 //- https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-b-reduced-schematics.pdf
 //- https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
 //- https://pinout.xyz/ (in [] brackets if different)

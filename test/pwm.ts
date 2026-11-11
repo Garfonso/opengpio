@@ -1,7 +1,6 @@
 import { NanoPi_NEO3 } from '../src';
 const pwm = NanoPi_NEO3.pwm(NanoPi_NEO3.bcm.GPIO2_B7, 0.5, 50);
 
-
 setTimeout(() => {
     let dutyCycle = 0.0;
     let direction = 1;

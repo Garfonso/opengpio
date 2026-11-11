@@ -1,6 +1,6 @@
-import EventEmitter from "events";
-import { debug } from "../debug";
-import { CleanupCallback } from "../types";
+import EventEmitter from 'events';
+import { debug } from '../debug';
+import { CleanupCallback } from '../types';
 
 const drivers: Set<GpioDriver> = new Set();
 process.on('beforeExit', () => {

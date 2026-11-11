@@ -1,1 +1,1 @@
-export class DriverStoppedError extends Error { }
+export class DriverStoppedError extends Error {}

@@ -1,5 +1,5 @@
-import { Gpio, GpioOutputOptions } from "../types";
-import { GpioDriver } from "./GpioDriver";
+import { Gpio, GpioOutputOptions } from '../types';
+import { GpioDriver } from './GpioDriver';
 /**
  * Represents a PWM (Pulse Width Modulation) GPIO pin.
  * Extends the `GpioDriver` class to provide PWM-specific functionality.

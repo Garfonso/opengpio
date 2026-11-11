@@ -2,7 +2,7 @@ class A {
     static param = { a: 1 };
 
     // The explicit 'this' parameter allows us to capture the calling class type.
-    static method<T extends typeof A>(opt: keyof T["param"]) {
+    static method<T extends typeof A>(opt: keyof T['param']) {
         console.log(opt);
     }
 }

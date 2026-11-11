@@ -1,7 +1,7 @@
-import { DutyCycleSetter, FrequencySetter, Gpio, GpioOutputOptions } from "../types";
+import { DutyCycleSetter, FrequencySetter, Gpio, GpioOutputOptions } from '../types';
 import { bindings } from '../bindings';
-import { GpioDriver } from "./GpioDriver";
-import { DriverStoppedError } from "../errors/DriverStoppedError";
+import { GpioDriver } from './GpioDriver';
+import { DriverStoppedError } from '../errors/DriverStoppedError';
 
 /**
  * Represents a PWM (Pulse Width Modulation) GPIO pin.
@@ -13,14 +13,14 @@ export class Pwm extends GpioDriver {
      * Defaults to a no-op function.
      * @private
      */
-    private dutyCycleSetter: DutyCycleSetter = () => { };
+    private dutyCycleSetter: DutyCycleSetter = () => {};
 
     /**
      * A function to set the frequency of the PWM pin.
      * Defaults to a no-op function.
      * @private
      */
-    private frequencySetter: FrequencySetter = () => { };
+    private frequencySetter: FrequencySetter = () => {};
 
     /**
      * Constructs a `Pwm` instance.
@@ -30,7 +30,12 @@ export class Pwm extends GpioDriver {
      * @param frequency - The initial frequency in hertz. Defaults to 50 Hz.
      * @param options - Configuration options for the PWM pin.
      */
-    constructor(gpio: Gpio, private dutyCycle: number, private frequency: number = 50, options: GpioOutputOptions = {}) {
+    constructor(
+        gpio: Gpio,
+        private dutyCycle: number,
+        private frequency: number = 50,
+        options: GpioOutputOptions = {}
+    ) {
         const [setDutyCycle, setFrequency, cleanup] = bindings.pwm(gpio.chip, gpio.line, dutyCycle, frequency);
         super(cleanup);
 

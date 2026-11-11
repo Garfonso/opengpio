@@ -7,7 +7,7 @@ class RaspberryPi_Zero2W extends Device_1.Device {
 }
 exports.RaspberryPi_Zero2W = RaspberryPi_Zero2W;
 _a = RaspberryPi_Zero2W;
-//as of 
+//as of
 //- https://datasheets.raspberrypi.com/rpizero2/raspberry-pi-zero-2-w-reduced-schematics.pdf
 //- https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
 //- https://pinout.xyz/ (in [] brackets if different)

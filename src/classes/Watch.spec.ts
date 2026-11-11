@@ -5,8 +5,8 @@ import { DriverStoppedError } from '../errors/DriverStoppedError';
 
 jest.mock('../bindings', () => ({
     bindings: {
-        watch: jest.fn(),
-    },
+        watch: jest.fn()
+    }
 }));
 
 describe('Watch', () => {

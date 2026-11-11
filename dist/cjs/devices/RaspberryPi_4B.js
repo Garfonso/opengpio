@@ -7,7 +7,7 @@ class RaspberryPi_4B extends Device_1.Device {
 }
 exports.RaspberryPi_4B = RaspberryPi_4B;
 _a = RaspberryPi_4B;
-//as of 
+//as of
 //- https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-reduced-schematics.pdf
 //- https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
 //- https://pinout.xyz/ (in [] brackets if different)

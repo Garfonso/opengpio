@@ -7,7 +7,7 @@ class RaspberryPi_3B extends Device_1.Device {
 }
 exports.RaspberryPi_3B = RaspberryPi_3B;
 _a = RaspberryPi_3B;
-//as of 
+//as of
 //- https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-b-reduced-schematics.pdf
 //- https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
 //- https://pinout.xyz/ (in [] brackets if different)

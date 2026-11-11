@@ -1,7 +1,7 @@
-import { NanoPi_NEO3, Bias } from '../src';
+import { NanoPi_NEO3 } from '../src';
 const output = NanoPi_NEO3.output(NanoPi_NEO3.bcm.GPIO2_A2);
 
-console.log("Output", output)
+console.log('Output', output);
 
 let value = false;
 setInterval(() => {

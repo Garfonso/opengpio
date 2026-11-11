@@ -93,9 +93,7 @@ describe('Output', () => {
 
         output.stop();
 
-        expect(() => {
-            const value = output.value;
-        }).toThrow(DriverStoppedError);
+        expect(() => output.value).toThrow(DriverStoppedError);
     });
 
     it('should convert truthy values to boolean when setting value', () => {

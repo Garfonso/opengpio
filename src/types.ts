@@ -111,7 +111,7 @@ export type OpenGpioBindings = {
         line: number,
         bias: number,
         debounce: number,
-        callback: WatchCallback,
+        callback: WatchCallback
     ) => [PinGetter, CleanupCallback];
 
     /**

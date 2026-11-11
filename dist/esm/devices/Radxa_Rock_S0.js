@@ -31,7 +31,7 @@ Radxa_Rock_S0.board = {
     7: { chip: 2, line: 13 },
     11: { chip: 2, line: 14 },
     18: { chip: 2, line: 15 },
-    29: { chip: 2, line: 16 },
+    29: { chip: 2, line: 16 }
 };
 Radxa_Rock_S0.bcm = {
     PIN_16: _a.board[16],
@@ -61,6 +61,6 @@ Radxa_Rock_S0.bcm = {
     PIN_7: _a.board[7],
     PIN_11: _a.board[11],
     PIN_18: _a.board[18],
-    PIN_29: _a.board[29],
+    PIN_29: _a.board[29]
 };
 //# sourceMappingURL=Radxa_Rock_S0.js.map

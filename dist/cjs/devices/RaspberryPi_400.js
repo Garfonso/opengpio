@@ -7,7 +7,7 @@ class RaspberryPi_400 extends Device_1.Device {
 }
 exports.RaspberryPi_400 = RaspberryPi_400;
 _a = RaspberryPi_400;
-//as of 
+//as of
 //- https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
 //- https://pinout.xyz/ (in [] brackets if different)
 //- and the output of gpioinfo (in brackets () if different)
